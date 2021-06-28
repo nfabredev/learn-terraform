@@ -37,7 +37,7 @@ The body of the block contains configuration arguments for the provider, defined
 
 ### [Purpose of Terraform State](https://www.terraform.io/docs/language/state/purpose.html)
 
-### Mapping to the Real World
+#### Mapping to the Real World
 
 Terraform requires some sort of database to map Terraform config to the real world. Terraform expects that each remote object is bound to only one resource instance
 
@@ -76,3 +76,19 @@ The required_providers block specifies all of the providers required by the curr
 In releases where experimental features are available, you can enable them on a per-module basis by setting the experiments argument inside a terraform block:
 
 #### [Passing Metadata to Providers](https://www.terraform.io/docs/internals/provider-meta.html)
+
+In some situations it's beneficial for a provider to offer an interface through which modules can pass it information unrelated to the resources in the module, but scoped on a per-module basis.
+
+### Provision Infrastructure Deployed with Terraform
+
+#### [Provision Infrastructure with Cloud-Init](https://learn.hashicorp.com/tutorials/terraform/cloud-init?in=terraform/provision)
+
+We deploy on AWS ( see [authentication](https://registry.terraform.io/providers/hashicorp/aws/latest/docs#authentication) docs ) a micro instance of virtual machine on a virtual private cloud, pre-networked, inside a security group.. The point being that the machine comes "blank", so we use a [cloudinit](# https://cloudinit.readthedocs.io/en/latest/topics/examples.html) script to configure the ssh access, the user groups, get some dependencies ( here Go, and a example web app ) in order to populate the machine. We learn how to pass an arbitrary script to a machine deployed through TF, using a [template file provider](https://registry.terraform.io/providers/hashicorp/template/latest/docs).
+
+#### [Provision Infrastructure with Packer](https://learn.hashicorp.com/tutorials/terraform/packer?in=terraform/provision)
+
+We deploy the same infra. The difference in the pre-configuration of the VM this time, is that we use Packer instead. Packer builds automated machine images, using a provided configuration script.
+
+### [Provisioners are a Last Resort](https://www.terraform.io/docs/language/resources/provisioners/syntax.html#provisioners-are-a-last-resort)
+
+tbc...
