@@ -83,9 +83,13 @@ In some situations it's beneficial for a provider to offer an interface through 
 
 #### [Provision Infrastructure with Cloud-Init](https://learn.hashicorp.com/tutorials/terraform/cloud-init?in=terraform/provision)
 
+See [companion repo](../learn-terraform-provisionning-cloudinit/).
+
 We deploy on AWS ( see [authentication](https://registry.terraform.io/providers/hashicorp/aws/latest/docs#authentication) docs ) a micro instance of virtual machine on a virtual private cloud, pre-networked, inside a security group.. The point being that the machine comes "blank", so we use a [cloudinit](# https://cloudinit.readthedocs.io/en/latest/topics/examples.html) script to configure the ssh access, the user groups, get some dependencies ( here Go, and a example web app ) in order to populate the machine. We learn how to pass an arbitrary script to a machine deployed through TF, using a [template file provider](https://registry.terraform.io/providers/hashicorp/template/latest/docs).
 
 #### [Provision Infrastructure with Packer](https://learn.hashicorp.com/tutorials/terraform/packer?in=terraform/provision)
+
+See [companion repo](../learn-terraform-provisionning-packer/).
 
 We deploy the same infra. The difference in the pre-configuration of the VM this time, is that we use Packer instead. Packer builds automated machine images, using a provided configuration script. This image is hosted on AWS, and we pass a reference to it into the tf main script to deploy it.
 
@@ -100,6 +104,8 @@ Most provisioners require access to the remote resource via SSH or WinRM, and ex
 The main provisioners are the [`file`](https://www.terraform.io/docs/language/resources/provisioners/file.html), [`local-exec`](https://www.terraform.io/docs/language/resources/provisioners/local-exec.html) and the [`remote-exec`](https://www.terraform.io/docs/language/resources/provisioners/remote-exec.html) provisioners.
 
 ### [Manage Resources in Terraform State Learn](https://learn.hashicorp.com/tutorials/terraform/state-cli)
+
+See [companion repo](../learn-terraform-state/).
 
 #### Create infrastructure and state
 
@@ -131,4 +137,8 @@ The `terraform refresh` command updates the state file when physical resources c
 
 ### [Use Refresh-Only Mode to Sync Terraform State](https://learn.hashicorp.com/tutorials/terraform/refresh)
 
-tbc...
+See [companion repo](../learn-terraform-refresh/).
+
+The default region of the infra is `us-east-2`. After deploying it there we add a `terraform.tfvars` file, which sets the region to be `us-west-2` instead. When executing the `terraform plan -refresh-only` we can see that, not being able to locate the infrastructure in this new region, TF assume we have destroyed it, and wants to remove it from the state.
+
+### [Lock and Upgrade Provider Versions](https://learn.hashicorp.com/tutorials/terraform/provider-versioning)
