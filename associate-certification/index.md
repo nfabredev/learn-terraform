@@ -87,8 +87,48 @@ We deploy on AWS ( see [authentication](https://registry.terraform.io/providers/
 
 #### [Provision Infrastructure with Packer](https://learn.hashicorp.com/tutorials/terraform/packer?in=terraform/provision)
 
-We deploy the same infra. The difference in the pre-configuration of the VM this time, is that we use Packer instead. Packer builds automated machine images, using a provided configuration script.
+We deploy the same infra. The difference in the pre-configuration of the VM this time, is that we use Packer instead. Packer builds automated machine images, using a provided configuration script. This image is hosted on AWS, and we pass a reference to it into the tf main script to deploy it.
 
 ### [Provisioners are a Last Resort](https://www.terraform.io/docs/language/resources/provisioners/syntax.html#provisioners-are-a-last-resort)
+
+Provisioners are a escape hatch from TF declarative model and its providers and modules system. There are many way to not use them that should be considered beforehand. If it's not possible to do otherwise you can add a `provisioner` block inside a `resource` block.
+
+By default, provisioners run when the resource they are defined within is created. They are meant as a means to perform bootstrapping of a system. If `when = destroy` is specified, the provisioner will run when the resource it is defined within is destroyed.
+
+Most provisioners require access to the remote resource via SSH or WinRM, and expect a nested connection block with details about how to connect.
+
+The main provisioners are the [`file`](https://www.terraform.io/docs/language/resources/provisioners/file.html), [`local-exec`](https://www.terraform.io/docs/language/resources/provisioners/local-exec.html) and the [`remote-exec`](https://www.terraform.io/docs/language/resources/provisioners/remote-exec.html) provisioners.
+
+### [Manage Resources in Terraform State Learn](https://learn.hashicorp.com/tutorials/terraform/state-cli)
+
+#### Create infrastructure and state
+
+We deploy a micro compute instance with an Ubuntu AMI, and read after apply the `terraform.tfstate` file to see how TF tracks the resources we just created.
+
+#### Examine the state file
+
+We can see for example that the aws_instance type is a managed resource with the AMI from the data.aws_ami source. We can see dependencies between resources marked in their respective `dependencies` block.
+
+#### Examine State with CLI
+
+You can use `terraform show` to get a human-friendly output of the resources contained in your state, or run `terraform state list` to get the list of resource names and local identifiers in your state file.
+
+#### Replace a resource with CLI
+
+Instead of updating the state by hand, or destroy / recreate resources, one can use the `-replace` flag of the CLI. If the resource state has drifted executing `terraform plan -replace="aws_instance.example"` would recreate it per the stored configuration.
+
+#### Move a resource to a different state file
+
+The `terraform state mv` command moves resources from one state file to another. The move command will update the resource in state, but not in your configuration file. As such reapplying the configuration will destroy the moved resources.
+
+#### Remove a resource from state
+
+The `terraform state rm` subcommand removes specific resources from your state file. This does not remove the resource from your configuration or destroy the infrastructure itself.
+
+#### Refresh modified infrastructure
+
+The `terraform refresh` command updates the state file when physical resources change outside of the Terraform workflow (configuration drift). We can destroy a resource using the cloud provider cli ( aws cli here ) or using the GUI, and run the `tf refresh` command to see that it was destroyed. Re-running `tf plan` will plan to add the resource back.
+
+### [Use Refresh-Only Mode to Sync Terraform State](https://learn.hashicorp.com/tutorials/terraform/refresh)
 
 tbc...
